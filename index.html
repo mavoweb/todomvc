@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="author" content="Dmitry Sharabin" />
+
+		<title>Mavo • TodoMVC</title>
+
+		<script src="https://dev.mavo.io/dist/mavo.es5.min.js"></script>
+		<link rel="stylesheet" href="https://dev.mavo.io/dist/mavo.css" />
+		<link rel="stylesheet" href="index.css" />
+	</head>
+
+	<body>
+		<section
+			mv-app="todoapp"
+			mv-bar="none"
+			mv-storage="local"
+			mv-autosave="3"
+			mv-source="#data"
+			class="todoapp mv-autoedit"
+		>
+			<header class="header">
+				<h1>todos</h1>
+				<form
+					mv-action="set(newTodo, newTodo.trim()), if(newTodo != '', add(newTodo, todo) & set(newTodo, ''))"
+				>
+					<input
+						property="newTodo"
+						class="new-todo"
+						placeholder="What needs to be done?"
+						autofocus
+					/>
+				</form>
+			</header>
+
+			<!-- This section should be hidden by default and shown when there are todos -->
+			<section hidden="[count(todo) = 0]" class="main">
+				<input
+					property="toggleAll"
+					id="toggle-all"
+					class="toggle-all"
+					type="checkbox"
+					checked="[todoLeft = 0]"
+				/>
+				<label for="toggle-all" mv-action="set(done, !toggleAll)">
+					Mark all as complete
+				</label>
+
+				<ul class="todo-list">
+					<li
+						mv-multiple="todo"
+						class="[if(done, 'completed')]"
+						hidden="[(done and activeFilter = 'active') or (!done and activeFilter = 'completed')]"
+					>
+						<div class="view">
+							<input property="done" class="toggle" type="checkbox" />
+							<label property="text">Taste JavaScript</label>
+							<button class="destroy" mv-action="delete(todo)"></button>
+						</div>
+					</li>
+				</ul>
+			</section>
+
+			<!-- This footer should hidden by default and shown when there are todos -->
+			<footer hidden="[count(todo) = 0]" class="footer">
+				<meta property="todoDone" content="[count(todo where done)]" />
+				<meta property="todoLeft" content="[count(todo where !done)]" />
+
+				<!-- This should be `0 items left` by default -->
+				<span class="todo-count">
+					<strong mv-value="todoLeft">0</strong>
+					[if(todoLeft = 1, 'item', 'items')] left
+				</span>
+
+				<meta property="activeFilter" content="all" mv-storage="none" />
+				<ul class="filters">
+					<li>
+						<a
+							class="[if(activeFilter = 'all', 'selected')]"
+							mv-action="set(activeFilter, 'all')"
+							>All</a
+						>
+					</li>
+					<li>
+						<a
+							class="[if(activeFilter = 'active', 'selected')]"
+							mv-action="set(activeFilter, 'active')"
+							>Active</a
+						>
+					</li>
+					<li>
+						<a
+							class="[if(activeFilter = 'completed', 'selected')]"
+							mv-action="set(activeFilter, 'completed')"
+							>Completed</a
+						>
+					</li>
+				</ul>
+
+				<!-- Hidden if no completed items are left ↓ -->
+				<button
+					hidden="[todoDone = 0]"
+					class="clear-completed"
+					mv-action="delete(todo where done)"
+				>
+					Clear completed
+				</button>
+			</footer>
+		</section>
+		<footer class="info">
+			<p>Click to edit a todo</p>
+			<p>Created by <a href="https://d12n.me/">Dmitry Sharabin</a></p>
+			<p>Part of <a href="http://todomvc.com">TodoMVC</a></p>
+		</footer>
+
+		<div id="data" hidden>
+			{
+				"todo": [
+					{ "text": "Taste JavaScript", "done": true },
+					{ "text": "Code furiously", "done": true },
+					{ "text": "Promote Mavo", "done": false },
+					{ "text": "Give talks", "done": false },
+					{ "text": "Write tutorials", "done": true },
+					{ "text": "Have a life!", "done": false }
+				]
+			}
+		</div>
+	</body>
+</html>
